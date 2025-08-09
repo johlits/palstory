@@ -1,0 +1,12 @@
+// PalStory Configuration
+const PALSTORY_CONFIG = {
+    IMAGE_BASE_URL: "<BASE_URL>/story/uploads/"
+};
+
+// Helper function to get full image URL
+function getImageUrl(imagePath) {
+    // Remove leading slashes and "uploads/" prefix if present
+    imagePath = imagePath.replace(/^\/+/, '');
+    imagePath = imagePath.replace(/^(story\/)?uploads\//, '');
+    return PALSTORY_CONFIG.IMAGE_BASE_URL + imagePath;
+}
