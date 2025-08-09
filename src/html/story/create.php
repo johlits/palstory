@@ -38,7 +38,7 @@ if (!isset($_SESSION['secret']) || ($_SESSION['secret'] != admin_game() && $_SES
 ?>
 <div class="create-header">
   <div><b><a href="/story/">Play game</a></b></div>
-  <div><a href="/">Home</a></div>
+  <div><a href="./">Home</a></div>
 </div>
 <div class="center-abs box">
 <form action="/story/create.php" method="post">

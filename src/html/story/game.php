@@ -272,18 +272,22 @@
   </div>
 
   <div id="create_player_box" class="box hidden">
-    <div class="stack">
-      <span class="nes-text is-primary">Create player</span>
+    <div class="grid grid-2">
       <div class="stack">
-        <label for="player_name">Player name:</label>
-        <input type="text" id="player_name" class="nes-input" <? if (isset($_GET["player"])) { echo 'disabled value="' . $_GET["player"] . '"'; } ?>>
+        <span class="nes-text is-primary">Create player</span>
+        <div class="stack">
+          <label for="player_name">Player name:</label>
+          <input type="text" id="player_name" class="nes-input" <? if (isset($_GET["player"])) { echo 'disabled value="' . $_GET["player"] . '"'; } ?>>
+        </div>
+        <div class="stack">
+          <label for="player_portrait">Player portrait:</label>
+          <input type="number" id="player_portrait" name="player_portrait" onchange="previewPortrait()" min="1" max="8" value="1">
+        </div>
+        <button id="create_player_btn" onclick="createPlayer()" type="button" class="nes-btn is-success mt-8">Create player!</button>
       </div>
       <div class="stack">
-        <label for="player_portrait">Player portrait:</label>
-        <input type="number" id="player_portrait" name="player_portrait" onchange="previewPortrait()" min="1" max="8" value="1">
+        <img id="player_portrait_preview" src="">
       </div>
-      <img id="player_portrait_preview" src="">
-      <button id="create_player_btn" onclick="createPlayer()" type="button" class="nes-btn is-success mt-8">Create player!</button>
     </div>
   </div>
 </body>

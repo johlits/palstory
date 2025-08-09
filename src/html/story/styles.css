@@ -2,6 +2,8 @@
 :root{
   --bg-1:#0b1220;
   --bg-2:#111a2e;
+  /* Base background used by scoped pages */
+  --bg:#0b1220;
   --panel:#121826cc;
   --text:#e6e9ef;
   --muted:#9aa4b2;
@@ -29,6 +31,10 @@ body{
   background-attachment: fixed;
   font-family: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
+
+/* Global link color */
+a, a:visited{ color: var(--text); }
+a:hover{ color: var(--text); text-decoration: underline; }
 
 /* Glass panel */
 .p-panel{
@@ -112,13 +118,13 @@ body{
 /* Content areas inside HUD panels */
 #items_table{ overflow-y:auto; max-height:400px; }
 #item_info_box{ max-height:300px; overflow-y:auto; }
-#item_image{ width:280px; height:280px; float:left; margin:5px; }
+#item_image{ width:280px; height:auto; display:block; margin:5px 10px 8px 5px; max-width:100%; }
 
 #location_info_box{ max-height:300px; overflow-y:auto; }
-#location_image{ width:280px; height:280px; float:left; margin:5px; }
+#location_image{ width:280px; height:auto; display:block; margin:5px 10px 8px 5px; max-width:100%; }
 
 #monster_info_box{ max-height:300px; overflow-y:auto; }
-#monster_image{ width:280px; height:280px; float:left; margin:5px; }
+#monster_image{ width:280px; height:auto; display:block; margin:5px 10px 8px 5px; max-width:100%; }
 
 #battle_log{ height:240px; overflow-y:auto; }
 #location_stats_box{ height:200px; }
@@ -215,6 +221,72 @@ body.create-page{ min-height:100vh; }
   border:1px solid var(--border) !important;
   border-radius:12px !important;
   box-shadow:var(--shadow) !important;
+  color:var(--text);
+  padding:16px;
+}
+
+/* Start page layout */
+body.start-page{ min-height:100vh; overflow:auto; }
+.p-center{ min-height:calc(100vh - 64px); display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+.p-panel{ background:var(--glass); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); }
+.p-card{ width:100%; max-width:440px; padding:20px; }
+.p-logo{ display:block; margin:0 auto 8px auto; }
+.p-title{ margin:0 0 8px 0; text-align:center; font-weight:800; letter-spacing:0.5px; }
+.p-sub{ margin:0 0 16px 0; text-align:center; color:var(--muted); }
+.p-form{ display:flex; flex-direction:column; gap:10px; align-items:center; }
+.p-label{ align-self:flex-start; font-weight:600; font-size:14px; color:var(--muted); }
+.p-input{ width:100%; max-width:300px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:#0f1629; color:var(--text); outline:none; transition:border-color .2s ease, box-shadow .2s ease; }
+.p-input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(92,113,255,0.25); }
+.p-actions{ display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:8px; }
+.p-btn{ appearance:none; border:1px solid var(--border); background:#0f1629; color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700; transition:transform .06s ease, filter .2s ease, border-color .2s ease; }
+.p-btn:hover{ filter:brightness(1.1); border-color:var(--primary); }
+.p-demo{ color:var(--muted); font-size:14px; text-decoration:underline; }
+
+/* Grid utilities */
+.grid{ display:grid; gap:12px; }
+.grid-2{ grid-template-columns: 1fr 180px; align-items:start; }
+@media (max-width: 520px){
+  .grid-2{ grid-template-columns: 1fr; }
+}
+
+/* Form controls in panels/boxes */
+.box input[type="text"],
+.box input[type="password"],
+.box input[type="number"],
+.box input[type="date"],
+.nes-input,
+.p-input{
+  width:100%; max-width:300px;
+}
+
+/* Date input styling */
+input[type="date"]{ padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:#0f1629; color:var(--text); outline:none; }
+input[type="date"]:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(92,113,255,0.25); }
+/* calendar icon color (webkit) */
+input[type="date"]::-webkit-calendar-picker-indicator{ filter: invert(1) opacity(0.8); cursor:pointer; }
+
+/* Center the create boxes over the game canvas */
+#create_game_box,
+#create_player_box{
+  position:fixed; left:16px; right:16px; top:50%; transform:translateY(-50%);
+  z-index:9999; max-width:480px; width:auto; margin:0 auto; max-height:92vh; overflow:auto;
+}
+#create_game_box .stack, #create_player_box .stack{ align-items:center; }
+#create_game_box label, #create_player_box label{ align-self:flex-start; font-weight:600; font-size:14px; color:var(--muted); }
+#player_portrait_preview{ display:block; margin:0 auto; }
+#create_player_box #player_portrait_preview{ width:140px; height:140px; }
+/* Slightly tighter vertical spacing inside modals */
+#create_game_box .stack, #create_player_box .stack{ gap:8px; }
+
+/* Center small auth panel on create page */
+.center-abs{ width:100%; max-width:360px; margin:24px auto; }
+
+/* Fallback for short viewports: anchor near top */
+@media (max-height: 540px) {
+  #create_game_box,
+  #create_player_box{
+    top:24px; transform:none;
+  }
 }
 
 /* Form elements (global) */
@@ -222,6 +294,7 @@ input[type="text"], input[type="password"], input[type="number"], input[type="em
 input[type="search"], select, textarea {
   width:100%; padding:12px 14px; font-size:14px; color:var(--text);
   background:#0f1629; border:1px solid var(--border); border-radius:12px;
+  outline:none; transition: border-color .15s ease, box-shadow .15s ease;
   outline:none; transition: border-color .15s ease, box-shadow .15s ease, background .2s ease;
 }
 input::placeholder, textarea::placeholder{ color:#6b7280; }
@@ -232,6 +305,67 @@ input[disabled], select[disabled], textarea[disabled]{ opacity:.6; cursor:not-al
 input[type="checkbox"], input[type="radio"]{
   accent-color: var(--primary);
 }
+
+/* Admin (create page) polish */
+body.create-page{ background: radial-gradient(60% 120% at 50% 0%, rgba(124,156,255,0.10) 0%, rgba(16,24,40,0) 60%) no-repeat, var(--bg); }
+.create-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; margin:8px auto 16px; max-width:1100px; }
+.create-header a{ color:var(--text); text-decoration:none; font-weight:600; }
+.create-header a:hover{ text-decoration:underline; }
+.ylink{ display:inline-block; margin:4px 8px 4px 0; padding:6px 10px; border:1px solid var(--border); border-radius:999px; background:rgba(255,255,255,0.02); color:var(--text); text-decoration:none; font-size:13px; }
+.ylink:hover{ border-color:var(--primary); background:rgba(92,113,255,0.08); }
+
+/* Labels above inputs (admin page) */
+.create-page label{ display:block; clear:both; font-weight:600; font-size:13px; color:var(--muted); margin:8px 0 4px; }
+/* Hide legacy <br> inserted after labels to avoid double spacing */
+.create-page label + br{ display:none; }
+
+/* More compact inputs on admin page */
+.create-page input[type="text"],
+.create-page input[type="password"],
+.create-page input[type="number"],
+.create-page input[type="email"],
+.create-page input[type="search"],
+.create-page select,
+.create-page textarea{
+  padding:8px 10px; font-size:12px; border-radius:8px;
+  width:100%; max-width:260px; /* prevent spillover regardless of size attribute */
+}
+/* Consistent spacing under fields */
+.create-page input, .create-page select, .create-page textarea{ display:block; clear:both; margin-bottom:10px; }
+/* Hide legacy <br> after controls too */
+.create-page input + br, .create-page select + br, .create-page textarea + br{ display:none; }
+.create-page .box input[type="text"],
+.create-page .box input[type="password"],
+.create-page .box input[type="number"],
+.create-page .box input[type="date"],
+.create-page .box textarea,
+.create-page .p-input{ max-width:260px; }
+
+/* Buttons inside admin page */
+.create-page button,
+.create-page input[type="submit"],
+.create-page input[type="button"]{
+  appearance:none; border:1px solid var(--border); background:#0f1629; color:var(--text);
+  padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
+  transition:transform .06s ease, filter .2s ease, border-color .2s ease;
+}
+.create-page button:hover,
+.create-page input[type="submit"]:hover,
+.create-page input[type="button"]:hover{ filter:brightness(1.08); border-color:var(--primary); }
+.create-page button:active,
+.create-page input[type="submit"]:active,
+.create-page input[type="button"]:active{ transform:translateY(1px); }
+
+/* Compact action buttons in tables */
+.create-page table button,
+.create-page table input[type="button"],
+.create-page table input[type="submit"]{ padding:6px 10px; font-weight:600; font-size:13px; border-radius:8px; }
+
+/* Table polish (if not already styled) */
+.create-page table{ width:100%; border-collapse:separate; border-spacing:0; margin:10px 0 18px; }
+.create-page th, .create-page td{ padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; }
+.create-page thead th{ position:sticky; top:0; background:rgba(15,22,41,0.85); backdrop-filter:saturate(140%) blur(8px); z-index:1; }
+.create-page tbody tr:hover{ background:rgba(255,255,255,0.02); }
 
 /* Button/link focus-visible for accessibility */
 button:focus-visible, .p-btn:focus-visible, .nes-btn:focus-visible, a:focus-visible{
@@ -264,17 +398,44 @@ dialog::backdrop{ background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
 
 /* Utility: visually hidden (for a11y) */
 .visually-hidden{ position:absolute !important; height:1px; width:1px; overflow:hidden; clip:rect(1px, 1px, 1px, 1px); white-space:nowrap; }
-.hidden{ display:none; }
+.hidden{ display:none !important; }
+.create-page input.hidden{ display:none !important; }
 
 /* Credits page layout (scoped) */
-.credits-page .column{ float:left; padding:10px; }
-.credits-page .left{ width:40%; }
-.credits-page .right{ width:60%; }
-.credits-page .row::after{ content:""; display:table; clear:both; }
-.credits-page td{ vertical-align: top; }
-.credits-page th{ text-align:left; }
+.credits-page{ padding:24px 16px; }
+.credits-page .row{ display:grid; grid-template-columns: 1fr; gap:16px; align-content:center; justify-items:stretch; max-width:560px; margin:0 auto; min-height:calc(100vh - 120px); }
+.credits-page .column{ float:none; padding:0; }
+.credits-page .left, .credits-page .right{ width:auto; }
+
+/* Panel look for columns */
+.credits-page .left, .credits-page .right{
+  background:var(--glass); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow);
+  padding:16px;
+}
+
+/* Headings */
+.credits-page h1{ margin:0 0 12px; font-size:28px; letter-spacing:.5px; text-align:center; }
+.credits-page h2{ margin:14px 0 10px; font-size:18px; color:var(--muted); }
+
+/* Lists */
+.credits-page ul{ margin:8px 0 12px 0; padding-left:0; list-style:none; }
+.credits-page li{ display:flex; align-items:flex-start; gap:10px; padding:6px 0; border-bottom:1px dashed var(--border); }
+.credits-page li:last-child{ border-bottom:none; }
+.credits-page li::before{ content:"\2022"; color:var(--primary); margin-top:-1px; }
+
+/* Tables */
+.credits-page table{ width:100%; border-collapse:separate; border-spacing:0; }
+.credits-page th, .credits-page td{ padding:8px 10px; border-bottom:1px solid var(--border); }
+.credits-page th{ text-align:left; color:var(--muted); font-weight:700; }
+.credits-page tbody tr:hover{ background:rgba(255,255,255,0.02); }
+
+/* Textareas */
 .credits-page #category,
-.credits-page #resources{ width:100%; height:100%; }
+.credits-page #resources{ width:100%; height:100%; min-height:180px; padding:10px; border:1px solid var(--border); border-radius:12px; background:#0f1629; color:var(--text); }
+
+@media (max-width: 900px){
+  .credits-page .row{ max-width: 92vw; }
+}
 
 /* Start page (index.php) layout (scoped) */
 .start-page{ min-height:100vh; background: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)), var(--start-bg, none); background-repeat:no-repeat; background-size:cover; background-position:center; }
