@@ -25,4 +25,11 @@ jobs:
         working-directory: palstory-web
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --detach
+          RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
+        run: railway up --service "$RAILWAY_SERVICE" --detach
+
+      - name: Print service URL
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
+        run: railway url --service "$RAILWAY_SERVICE"
