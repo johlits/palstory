@@ -46,33 +46,35 @@ jobs:
       - name: Compute tags
         id: meta
         run: |
-          # Docker Hub repo
           REPO_DH="johlits/palstory-web"
           REPO_GHCR="ghcr.io/${{ github.repository_owner }}/palstory"
 
-          # Basic SHA tag
           SHA_TAG="sha-${GITHUB_SHA::7}"
           VERSION_TAG=""
           LATEST_TAG=""
 
-          # Version tag if this is a Git tag
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            VERSION_TAG="${GITHUB_REF_NAME}"
+          # Detect version tag from Git tag
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            VERSION_TAG="${GITHUB_REF#refs/tags/}"
           fi
 
-          # Latest tag if main branch
-          if [[ "${GITHUB_REF_NAME}" == "main" && "${GITHUB_REF_TYPE}" == "branch" ]]; then
+          # Detect latest tag from main branch
+          if [[ "${GITHUB_REF}" == refs/heads/main ]]; then
             LATEST_TAG="latest"
           fi
 
-          # Build tag list dynamically (skip empty tags)
-          TAGS="${SHA_TAG}"
-          [[ -n "$LATEST_TAG" ]] && TAGS="$TAGS,$LATEST_TAG"
-          [[ -n "$VERSION_TAG" ]] && TAGS="$TAGS,$VERSION_TAG"
+          # Build array of non-empty tags
+          TAGS=()
+          TAGS+=("${REPO_DH}:${SHA_TAG}")
+          [[ -n "$LATEST_TAG" ]] && TAGS+=("${REPO_DH}:${LATEST_TAG}")
+          [[ -n "$VERSION_TAG" ]] && TAGS+=("${REPO_DH}:${VERSION_TAG}")
+
+          # Join array with commas for Buildx
+          TAGS_STR=$(IFS=, ; echo "${TAGS[*]}")
 
           echo "repo_dh=$REPO_DH" >> $GITHUB_OUTPUT
           echo "repo_ghcr=$REPO_GHCR" >> $GITHUB_OUTPUT
-          echo "tags=$TAGS" >> $GITHUB_OUTPUT
+          echo "tags=$TAGS_STR" >> $GITHUB_OUTPUT
 
       - name: Build and push (Docker Hub)
         if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN
@@ -85,7 +87,7 @@ jobs:
           file: palstory-web/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.repo_dh }}:${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -98,7 +100,8 @@ jobs:
           file: palstory-web/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.tags }}
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
