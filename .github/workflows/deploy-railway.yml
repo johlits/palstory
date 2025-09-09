@@ -28,8 +28,9 @@ jobs:
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: railway up --service "$RAILWAY_SERVICE" --detach
 
-      - name: Print service URL
+      - name: Print all service URLs
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
-        run: railway domain list --service "$RAILWAY_SERVICE"
+        run: |
+          echo "Fetching all domains for this project..."
+          railway domain list
