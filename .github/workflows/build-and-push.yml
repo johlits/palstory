@@ -46,9 +46,9 @@ jobs:
       - name: Compute tags
         id: meta
         run: |
-          # Docker Hub repo hardcoded to your repo
           REPO_DH="johlits/palstory-web"
           REPO_GHCR="ghcr.io/${{ github.repository_owner }}/palstory"
+
           SHA_TAG="sha-${GITHUB_SHA::7}"
           VERSION_TAG=""
           LATEST_TAG=""
@@ -60,17 +60,14 @@ jobs:
             LATEST_TAG="latest"
           fi
 
-          # Build tags list dynamically (skip empty)
-          TAGS="${SHA_TAG}"
-          [[ -n "$LATEST_TAG" ]] && TAGS="$TAGS,$LATEST_TAG"
-          [[ -n "$VERSION_TAG" ]] && TAGS="$TAGS,$VERSION_TAG"
-
           echo "repo_dh=$REPO_DH" >> $GITHUB_OUTPUT
           echo "repo_ghcr=$REPO_GHCR" >> $GITHUB_OUTPUT
-          echo "tags=$TAGS" >> $GITHUB_OUTPUT
+          echo "sha_tag=$SHA_TAG" >> $GITHUB_OUTPUT
+          echo "version_tag=$VERSION_TAG" >> $GITHUB_OUTPUT
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
 
       - name: Build and push (Docker Hub)
-        if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN && steps.meta.outputs.repo_dh
+        if: env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN
         uses: docker/build-push-action@v6
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -80,7 +77,10 @@ jobs:
           file: palstory-web/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.repo_dh }}:${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.repo_dh }}:${{ steps.meta.outputs.sha_tag }}
+            ${{ steps.meta.outputs.repo_dh }}:${{ steps.meta.outputs.latest_tag }}
+            ${{ steps.meta.outputs.repo_dh }}:${{ steps.meta.outputs.version_tag }}
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -93,7 +93,10 @@ jobs:
           file: palstory-web/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.sha_tag }}
+            ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.latest_tag }}
+            ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.version_tag }}
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
