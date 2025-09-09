@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,11 +21,6 @@ jobs:
       - name: Install Railway CLI
         run: npm i -g @railway/cli
 
-      - name: Verify auth
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway whoami
-
       - name: Deploy via Railway (build from palstory-web/Dockerfile)
         working-directory: palstory-web
         env:
@@ -32,7 +28,10 @@ jobs:
           RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: |
-          railway up \
-            --project "$RAILWAY_PROJECT" \
-            --service "$RAILWAY_SERVICE" \
-            --detach
+          railway link --project "$RAILWAY_PROJECT"
+          railway up --service "$RAILWAY_SERVICE" --detach
+
+      - name: Print all service URLs
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway domain list
