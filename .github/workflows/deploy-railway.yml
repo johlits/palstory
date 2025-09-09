@@ -10,25 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout the repo
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node (for Railway CLI)
+      # 2️⃣ Setup Node (required for Railway CLI)
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      # 3️⃣ Install Railway CLI
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Deploy via Railway (build from palstory-web/Dockerfile)
+      # 4️⃣ Deploy your service
+      - name: Deploy via Railway
         working-directory: palstory-web
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
         run: |
-          railway up --detach
+          echo "Deploying service $RAILWAY_SERVICE_NAME..."
+          railway up --service "$RAILWAY_SERVICE_NAME" --detach
 
-      - name: Print all service URLs
+      # 5️⃣ Print the deployed service URLs
+      - name: Print service URL(s)
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway domain list
+        run: |
+          echo "Listing all domains for this project:"
+          railway domain list
