@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout
+      # 1️⃣ Checkout repo
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -24,26 +24,21 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      # 4️⃣ Authenticate CLI using project token
-      - name: Authenticate Railway CLI
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          echo "$RAILWAY_TOKEN" | railway login --token
-
-      # 5️⃣ Deploy your service
+      # 4️⃣ Deploy your service
       - name: Deploy service
         working-directory: palstory-web
         env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
         run: |
           echo "Deploying service $RAILWAY_SERVICE_NAME..."
           railway up --service "$RAILWAY_SERVICE_NAME" --detach
 
-      # 6️⃣ Print deployed service URL
+      # 5️⃣ Print deployed service URL
       - name: Print service URL
         working-directory: palstory-web
         env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
         run: |
           echo "Service URL:"
