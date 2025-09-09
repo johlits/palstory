@@ -24,22 +24,51 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      # 4️⃣ Deploy your service
-      - name: Deploy service
-        working-directory: palstory-web
+      # 4️⃣ Authenticate (non-interactive)
+      - name: Authenticate Railway CLI
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
         run: |
-          echo "Deploying service $RAILWAY_SERVICE_NAME..."
-          railway up --service "$RAILWAY_SERVICE_NAME" --detach
+          if [ -z "${RAILWAY_TOKEN:-}" ]; then
+            echo "RAILWAY_TOKEN is not set. Add a repository secret named RAILWAY_TOKEN (Account API token)." >&2
+            exit 1
+          fi
+          railway login --token "$RAILWAY_TOKEN"
 
-      # 5️⃣ Print deployed service URL
-      - name: Print service URL
+      # 5️⃣ Deploy prebuilt image if provided (preferred)
+      - name: Deploy prebuilt image (if RAILWAY_IMAGE provided)
+        if: ${{ secrets.RAILWAY_IMAGE != '' }}
         working-directory: palstory-web
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
+          RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
+          RAILWAY_IMAGE: ${{ secrets.RAILWAY_IMAGE }}
+        run: |
+          echo "Deploying image $RAILWAY_IMAGE to service $RAILWAY_SERVICE_NAME..."
+          PROJECT_ARG=""; [ -n "${RAILWAY_PROJECT:-}" ] && PROJECT_ARG="--project \"$RAILWAY_PROJECT\""
+          railway service deploy $PROJECT_ARG --service "$RAILWAY_SERVICE_NAME" --image "$RAILWAY_IMAGE" --detach
+
+      # 6️⃣ Fallback: build from repo (current behaviour)
+      - name: Deploy by building from repo (fallback when no image specified)
+        if: ${{ secrets.RAILWAY_IMAGE == '' }}
+        working-directory: palstory-web
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
           RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
         run: |
-          echo "Service URL:"
-          railway run --service "$RAILWAY_SERVICE_NAME" echo $RAILWAY_URL
+          echo "Deploying by building from palstory-web/Dockerfile to service $RAILWAY_SERVICE_NAME..."
+          PROJECT_ARG=""; [ -n "${RAILWAY_PROJECT:-}" ] && PROJECT_ARG="--project \"$RAILWAY_PROJECT\""
+          railway up $PROJECT_ARG --service "$RAILWAY_SERVICE_NAME" --detach
+
+      # 7️⃣ Print deployed service URLs
+      - name: Print service URLs
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
+          RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
+        run: |
+          PROJECT_ARG=""; [ -n "${RAILWAY_PROJECT:-}" ] && PROJECT_ARG="--project \"$RAILWAY_PROJECT\""
+          echo "Domains for service $RAILWAY_SERVICE_NAME:"
+          railway domain list $PROJECT_ARG --service "$RAILWAY_SERVICE_NAME" || true
