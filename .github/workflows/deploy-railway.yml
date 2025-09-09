@@ -25,12 +25,14 @@ jobs:
         working-directory: palstory-web
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
-        run: railway up --service "$RAILWAY_SERVICE" --detach
+        run: railway up --project "$RAILWAY_PROJECT" --service "$RAILWAY_SERVICE" --detach
 
       - name: Print all service URLs
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
         run: |
-          echo "Fetching all domains for this project..."
-          railway domain list
+          echo "Fetching all domains for project $RAILWAY_PROJECT..."
+          railway domain list --project "$RAILWAY_PROJECT"
