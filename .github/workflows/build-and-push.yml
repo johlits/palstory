@@ -46,7 +46,8 @@ jobs:
       - name: Compute tags
         id: meta
         run: |
-          REPO_DH="${{ secrets.DOCKERHUB_REPO || format('{0}/{1}', secrets.DOCKERHUB_USERNAME, 'palstory') }}"
+          # Docker Hub repo hardcoded to your repo
+          REPO_DH="johlits/palstory-web"
           REPO_GHCR="ghcr.io/${{ github.repository_owner }}/palstory"
           SHA_TAG="sha-${GITHUB_SHA::7}"
           VERSION_TAG=""
@@ -59,7 +60,7 @@ jobs:
             LATEST_TAG="latest"
           fi
 
-          # Build tags list dynamically
+          # Build tags list dynamically (skip empty)
           TAGS="${SHA_TAG}"
           [[ -n "$LATEST_TAG" ]] && TAGS="$TAGS,$LATEST_TAG"
           [[ -n "$VERSION_TAG" ]] && TAGS="$TAGS,$VERSION_TAG"
@@ -92,8 +93,7 @@ jobs:
           file: palstory-web/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: |
-            ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.tags }}
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
