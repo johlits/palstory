@@ -32,4 +32,4 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
-        run: railway url --service "$RAILWAY_SERVICE"
+        run: railway domain list --service "$RAILWAY_SERVICE"
