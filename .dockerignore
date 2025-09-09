@@ -1,0 +1,27 @@
+# Global dockerignore for building from repo root
+.git
+.gitignore
+.github
+**/.DS_Store
+**/node_modules
+**/vendor
+**/tmp
+**/.env
+
+# Exclude local dev artifacts
+**/.vscode
+**/.idea
+
+# Exclude compose and local infra not needed at runtime
+palstory-lamp/
+
+# Keep only the app sources needed by palstory-web/Dockerfile
+# Note: palstory-web/Dockerfile expects palstory-game/src/html
+# so ensure we do NOT exclude palstory-game/src/html
+!palstory-game/
+!palstory-game/src/
+!palstory-game/src/html/
+
+# Allow palstory-web Dockerfile
+!palstory-web/
+!palstory-web/Dockerfile

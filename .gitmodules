@@ -1,0 +1,9 @@
+[submodule "palstory-game"]
+	path = palstory-game
+	url = https://github.com/johlits/palstory-game
+[submodule "palstory-lamp"]
+	path = palstory-lamp
+	url = https://github.com/johlits/palstory-lamp
+[submodule "palstory-vscode"]
+	path = palstory-vscode
+	url = https://github.com/johlits/palstory-vscode.git
