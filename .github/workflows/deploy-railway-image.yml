@@ -24,12 +24,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           IMAGE: ${{ inputs.image }}
-          RAILWAY_PROJECT: ${{ secrets.RAILWAY_PROJECT }}
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: |
           set -euo pipefail
-          ARGS=()
-          if [ -n "${RAILWAY_PROJECT:-}" ]; then ARGS+=(--project "$RAILWAY_PROJECT"); fi
-          if [ -n "${RAILWAY_SERVICE:-}" ]; then ARGS+=(--service "$RAILWAY_SERVICE"); fi
-          ARGS+=(--image "$IMAGE")
-          railway service deploy "${ARGS[@]}"
+          railway up --service "$RAILWAY_SERVICE" -d --image "$IMAGE"
