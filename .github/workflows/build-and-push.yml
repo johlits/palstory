@@ -88,6 +88,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            CACHEBUST=${{ github.sha }}
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -102,6 +104,8 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.repo_ghcr }}:${{ steps.meta.outputs.tags }}
+          build-args: |
+            CACHEBUST=${{ github.sha }}
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}

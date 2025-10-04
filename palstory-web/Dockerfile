@@ -30,8 +30,10 @@ RUN a2enmod rewrite
 # This avoids relying on Docker build context paths when building from subfolders (e.g., Railway)
 ARG PALSTORY_GAME_REPO=https://github.com/johlits/palstory-game.git
 ARG PALSTORY_GAME_REF=main
+ARG CACHEBUST=1
 WORKDIR /var/www
-RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/* \
+RUN echo "Cache bust: $CACHEBUST" \
+    && apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 --branch "$PALSTORY_GAME_REF" "$PALSTORY_GAME_REPO" /tmp/palstory-game \
     && mkdir -p /var/www/html \
     && cp -a /tmp/palstory-game/src/html/. /var/www/html/ \
