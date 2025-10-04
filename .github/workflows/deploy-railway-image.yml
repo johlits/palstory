@@ -28,7 +28,8 @@ jobs:
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: |
           set -euo pipefail
-          PROJECT_ARG=""; SERVICE_ARG=""
-          if [ -n "${RAILWAY_PROJECT:-}" ]; then PROJECT_ARG="--project \"$RAILWAY_PROJECT\""; fi
-          if [ -n "${RAILWAY_SERVICE:-}" ]; then SERVICE_ARG="--service \"$RAILWAY_SERVICE\""; fi
-          bash -lc "railway service deploy $PROJECT_ARG $SERVICE_ARG --image \"$IMAGE\""
+          ARGS=()
+          if [ -n "${RAILWAY_PROJECT:-}" ]; then ARGS+=(--project "$RAILWAY_PROJECT"); fi
+          if [ -n "${RAILWAY_SERVICE:-}" ]; then ARGS+=(--service "$RAILWAY_SERVICE"); fi
+          ARGS+=(--image "$IMAGE")
+          railway service deploy "${ARGS[@]}"
